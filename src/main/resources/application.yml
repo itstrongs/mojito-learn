@@ -1,0 +1,7 @@
+#spring:
+#  kafka:
+#    bootstrap-servers: 10.20.140.86:9091,10.20.140.86:9092,10.20.140.86:9093
+#    consumer:
+#      properties:
+#        group:
+#          id: test_group_id
