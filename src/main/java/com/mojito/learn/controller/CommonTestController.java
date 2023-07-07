@@ -1,17 +1,14 @@
 package com.mojito.learn.controller;
 
-import com.mojito.learn.util.EtcdUtils;
-import io.etcd.jetcd.Client;
-import io.etcd.jetcd.KeyValue;
+import com.mojito.learn.service.EtcdService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -23,20 +20,20 @@ import java.util.UUID;
 @Slf4j
 public class CommonTestController {
 
-    public static final String UEAGENT_INFO_KEY = "/";
-
     @Resource
-    private Client etcdClient;
+    private EtcdService etcdService;
 
     @Resource
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @GetMapping("/etcd")
+    @GetMapping("/etcd/get")
     public String etcd() {
-        List<KeyValue> kvs = EtcdUtils.getResponse(etcdClient.getKVClient(), UEAGENT_INFO_KEY, true).getKvs();
-        String value = EtcdUtils.getFirstOrDefault(kvs, null);
-        log.info("查询etcd key={}, value={}", UEAGENT_INFO_KEY, value);
-        return value;
+        return etcdService.getValue("/");
+    }
+
+    @GetMapping("/etcd/put")
+    public void etcd(@RequestParam String key, @RequestParam String value) {
+        etcdService.putValue(key,value);
     }
 
     @GetMapping("/kafka")
